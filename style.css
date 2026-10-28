@@ -1,0 +1,125 @@
+/* --- CONFIGURACIÓN BASE Y VARIABLES --- */
+:root {
+--accent-glow: rgba(0, 0, 0, 0.04);
+}
+
+/* Personalización de Scrollbar Neutral Elegante */
+::-webkit-scrollbar {
+width: 6px;
+height: 6px;
+}
+
+::-webkit-scrollbar-track {
+background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+background: #d4d4d4;
+border-radius: 9999px;
+transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: #a3a3a3;
+}
+
+/* --- ANIMACIONES Y TRANSICIONES SUAVES --- */
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(6px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes pulseGlow {
+0%, 100% {
+box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+}
+50% {
+box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+}
+}
+
+.animate-fade-in {
+animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pulse-badge {
+animation: pulseGlow 2s infinite;
+}
+
+/* --- EFECTOS VISUALES Y TARJETAS GLASS --- */
+.glass-card {
+background: rgba(255, 255, 255, 0.85);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.hover-card-rise {
+transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hover-card-rise:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+/* --- PERSONALIZACIÓN DE INPUT RANGE Y SELECTIONS --- */
+input[type="range"] {
+-webkit-appearance: none;
+appearance: none;
+background: #e5e5e5;
+border-radius: 9999px;
+height: 5px;
+outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 14px;
+height: 14px;
+border-radius: 50%;
+background: #171717;
+cursor: pointer;
+transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+transform: scale(1.2);
+background: #262626;
+}
+
+input[type="range"]::-moz-range-thumb {
+width: 14px;
+height: 14px;
+border-radius: 50%;
+background: #171717;
+cursor: pointer;
+border: none;
+transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+transform: scale(1.2);
+background: #262626;
+}
+
+/* --- ESTADOS ENFOQUE MEJORADOS --- */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible {
+outline: 2px solid #171717;
+outline-offset: 2px;
+}
+
+/* Utilitarios de texto y maquetación */
+.text-balance {
+text-wrap: balance;
+}

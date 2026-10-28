@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiMind - Asistente Académico Virtual</title>
+    
+    <!-- Tailwind CSS desde CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', 'sans-serif'],
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Phosphor Icons para iconografía moderna -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Font Inter para legibilidad y estética neutral -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Librería PDF.js para lectura de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+    <!-- Librería Mammoth.js para lectura de Word (.docx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    
+    <!-- Hoja de Estilos Personalizada -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-neutral-50 text-neutral-800 font-sans antialiased selection:bg-neutral-200 selection:text-neutral-900">
+
+    <!-- HEADER / NAVEGACIÓN -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-200 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center font-bold text-xl shadow-sm">
+                    <i class="ph ph-brain text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg text-neutral-900 tracking-tight">AcademiMind</span>
+                    <span class="hidden sm:inline-block text-xs text-neutral-500 font-medium ml-1 bg-neutral-100 px-2 py-0.5 rounded-full border border-neutral-200">Enfoque Pro</span>
+                </div>
+            </div>
+
+            <!-- Barra de Búsqueda Global para Asignaciones -->
+            <div class="flex-1 max-w-md mx-2">
+                <div class="relative">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-lg"></i>
+                    <input type="text" id="globalSearchInput" 
+                           placeholder="Buscar asignaciones por título o materia..." 
+                           class="w-full pl-10 pr-10 py-2 bg-neutral-100 border border-neutral-200 rounded-xl text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:bg-white transition-all">
+                    <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600">
+                        <i class="ph ph-x-circle text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navegación Escritorio -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-600">
+                <a href="#analyzer" class="hover:text-neutral-900 transition-colors">Analizador IA</a>
+                <a href="#timer" class="hover:text-neutral-900 transition-colors">Cronómetro</a>
+                <a href="#tasks" class="hover:text-neutral-900 transition-colors">Tareas</a>
+                <a href="#stats" class="hover:text-neutral-900 transition-colors">Desempeño</a>
+            </nav>
+
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-neutral-600 hover:text-neutral-900">
+                <i class="ph ph-list text-2xl"></i>
+            </button>
+        </div>
+        
+        <!-- Menú Móvil -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-neutral-200 bg-white px-4 py-3 space-y-2">
+            <a href="#analyzer" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900">Analizador IA</a>
+            <a href="#timer" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900">Cronómetro Pomodoro</a>
+            <a href="#tasks" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900">Gestor de Tareas</a>
+            <a href="#stats" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900">Resultados de Estudio</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECCIÓN HERO -->
+        <section class="text-center py-6 md:py-10 space-y-4 max-w-3xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-xs text-neutral-600 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Espacio de Estudio Libre de Distracciones
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 tracking-tight leading-tight">
+                Tu Asistente de Concentración y Análisis Académico
+            </h1>
+            <p class="text-neutral-600 text-sm sm:text-base leading-relaxed">
+                Procesa documentos, genera resúmenes automáticos, administra tus sesiones de estudio Pomodoro y organiza tus asignaciones por nivel de complejidad en un entorno visual sereno.
+            </p>
+        </section>
+
+        <!-- REPRODUCTOR DE AUDIO PARA LA CONCENTRACIÓN -->
+        <section class="bg-white rounded-2xl p-4 sm:p-6 border border-neutral-200 shadow-sm transition-all hover:shadow-md">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div class="w-12 h-12 rounded-xl bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-700 shrink-0">
+                        <i id="audioIcon" class="ph ph-waves text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Audio de Enfoque</span>
+                            <span id="audioBadge" class="text-[10px] px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-600 font-medium border border-neutral-200">Pausado</span>
+                        </div>
+                        <h3 id="audioTrackTitle" class="text-base font-semibold text-neutral-900">Lluvia Suave & Café (Ruido Marrón)</h3>
+                    </div>
+                </div>
+
+                <!-- Controles -->
+                <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                    <div class="flex items-center gap-2">
+                        <button id="playPauseAudioBtn" class="w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-all shadow-sm">
+                            <i id="playIcon" class="ph ph-play text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Selector y Volumen -->
+                    <div class="flex items-center gap-3">
+                        <select id="audioSelect" class="text-xs bg-neutral-100 border border-neutral-200 rounded-lg px-2.5 py-2 text-neutral-700 focus:outline-none">
+                            <option value="rain">🌧️ Lluvia Suave</option>
+                            <option value="white">📻 Ruido Blanco</option>
+                            <option value="lofi">🎧 Generador Synth Lo-Fi</option>
+                        </select>
+                        <div class="flex items-center gap-2 hidden sm:flex">
+                            <i class="ph ph-speaker-high text-neutral-400 text-lg"></i>
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5" class="w-20 accent-neutral-800">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÓDULO DE ANÁLISIS ACADÉMICO -->
+        <section id="analyzer" class="space-y-6">
+            <div class="border-b border-neutral-200 pb-4">
+                <h2 class="text-2xl font-bold text-neutral-900 flex items-center gap-2">
+                    <i class="ph ph-sparkle text-neutral-600"></i> Módulo de Análisis Académico
+                </h2>
+                <p class="text-sm text-neutral-500">Carga documentos (PDF, Word, TXT) o pega tu texto para sintetizar información al instante.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Panel de Entrada -->
+                <div class="bg-white rounded-2xl border border-neutral-200 p-6 space-y-4 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <!-- Dropzone de Archivo -->
+                        <div id="dropZone" class="border-2 border-dashed border-neutral-300 rounded-xl p-6 text-center hover:border-neutral-500 transition-colors bg-neutral-50 cursor-pointer group">
+                            <input type="file" id="fileInput" accept=".pdf,.docx,.txt" class="hidden">
+                            <div class="w-12 h-12 rounded-full bg-neutral-200/60 text-neutral-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform">
+                                <i class="ph ph-file-arrow-up text-2xl"></i>
+                            </div>
+                            <p class="text-sm font-semibold text-neutral-700">Arrastra tu archivo aquí o <span class="text-blue-600 underline">examina</span></p>
+                            <p class="text-xs text-neutral-400 mt-1">Soporta archivos PDF, Word (.docx) o Texto Plano (.txt)</p>
+                            <div id="fileInfo" class="hidden mt-3 p-2 bg-neutral-200/50 rounded-lg text-xs font-medium text-neutral-700 flex items-center justify-center gap-2">
+                                <i class="ph ph-file-text text-base"></i>
+                                <span id="fileName">archivo.pdf</span>
+                            </div>
+                        </div>
+
+                        <div class="relative my-4 text-center">
+                            <span class="bg-white px-3 text-xs text-neutral-400 font-medium">o pega el texto directamente</span>
+                            <div class="absolute inset-0 flex items-center -z-10"><div class="w-full border-t border-neutral-200"></div></div>
+                        </div>
+
+                        <!-- Área de Texto -->
+                        <div>
+                            <textarea id="textInput" rows="7" 
+                                      placeholder="Pega aquí el texto de tu lectura, clase o ensayo..." 
+                                      class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:bg-white resize-none transition-all"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="flex items-center gap-3 pt-2">
+                        <button id="processBtn" class="flex-1 py-3 px-4 bg-neutral-900 hover:bg-neutral-800 text-white font-medium text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm">
+                            <i class="ph ph-cpu text-lg"></i> Procesar y Analizar Documento
+                        </button>
+                        <button id="clearBtn" class="py-3 px-4 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-medium text-sm rounded-xl transition-all">
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel de Salida / Resultados -->
+                <div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm flex flex-col justify-between space-y-4">
+                    <div>
+                        <!-- Controles de lectura y estado -->
+                        <div class="flex items-center justify-between pb-4 border-b border-neutral-100">
+                            <div class="flex items-center gap-2">
+                                <span id="detectedLangBadge" class="text-xs font-medium px-2.5 py-1 bg-neutral-100 border border-neutral-200 text-neutral-600 rounded-lg">
+                                    Idioma: Esperando entrada...
+                                </span>
+                            </div>
+                            
+                            <!-- Controles TTS (Lectura en Voz Alta) -->
+                            <div class="flex items-center gap-2">
+                                <button id="ttsPlayBtn" disabled title="Leer resumen en voz alta" class="p-2 rounded-lg bg-neutral-100 text-neutral-400 disabled:opacity-50 hover:bg-neutral-200 hover:text-neutral-800 transition-all">
+                                    <i class="ph ph-speaker-high text-lg"></i>
+                                </button>
+                                <button id="ttsStopBtn" disabled title="Detener lectura" class="p-2 rounded-lg bg-neutral-100 text-neutral-400 disabled:opacity-50 hover:bg-neutral-200 hover:text-neutral-800 transition-all">
+                                    <i class="ph ph-stop text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Contenido del Análisis -->
+                        <div id="analysisOutput" class="pt-4 space-y-4 text-sm text-neutral-600 min-h-[250px] max-h-[380px] overflow-y-auto pr-1">
+                            <div class="h-full flex flex-col items-center justify-center text-center py-12 text-neutral-400 space-y-2">
+                                <i class="ph ph-article text-4xl"></i>
+                                <p>Carga o pega un texto para visualizar la detección de idioma, ideas clave y resumen estructurado.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="translationNotice" class="hidden text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl flex items-center gap-2">
+                        <i class="ph ph-translate text-base"></i>
+                        <span>El documento de origen fue detectado en otro idioma y traducido automáticamente al español.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ORGANIZADOR DE TIEMPO Y POMODORO -->
+        <section id="timer" class="space-y-6">
+            <div class="border-b border-neutral-200 pb-4">
+                <h2 class="text-2xl font-bold text-neutral-900 flex items-center gap-2">
+                    <i class="ph ph-timer text-neutral-600"></i> Organizador de Tiempo y Sesiones Pomodoro
+                </h2>
+                <p class="text-sm text-neutral-500">Administra tus bloques de concentración estructurados y acumula horas por asignatura.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Temporizador Pomodoro -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm flex flex-col items-center justify-center text-center space-y-6">
+                    
+                    <!-- Selección de Asignatura -->
+                    <div class="flex items-center gap-3 w-full max-w-xs">
+                        <label for="timerSubject" class="text-xs font-semibold text-neutral-500 uppercase tracking-wider whitespace-nowrap">Área:</label>
+                        <select id="timerSubject" class="w-full bg-neutral-100 border border-neutral-200 text-sm font-medium rounded-xl px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-400">
+                            <option value="Matemáticas">📐 Matemáticas</option>
+                            <option value="Historia">📜 Historia</option>
+                            <option value="Programación">💻 Programación</option>
+                            <option value="Literatura">📚 Literatura</option>
+                            <option value="Ciencias">🔬 Ciencias</option>
+                            <option value="Idiomas">🌍 Idiomas</option>
+                        </select>
+                    </div>
+
+                    <!-- Display del Reloj -->
+                    <div class="space-y-2">
+                        <div id="timerModeBadge" class="inline-block text-xs font-semibold uppercase tracking-widest px-3 py-1 bg-neutral-100 text-neutral-700 rounded-full border border-neutral-200">
+                            Bloque de Enfoque (25 min)
+                        </div>
+                        <div id="timerDisplay" class="text-6xl sm:text-7xl font-mono font-bold text-neutral-900 tracking-tight">
+                            25:00
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción del Timer -->
+                    <div class="flex items-center gap-4">
+                        <button id="startTimerBtn" class="px-6 py-3 bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-all shadow-sm">
+                            <i id="timerPlayIcon" class="ph ph-play text-lg"></i> Iniciar
+                        </button>
+                        <button id="resetTimerBtn" class="px-4 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-sm font-medium rounded-xl transition-all">
+                            <i class="ph ph-arrow-counter-clockwise text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Modos de Tiempo -->
+                    <div class="flex items-center gap-2 bg-neutral-100 p-1 rounded-xl text-xs font-medium text-neutral-600">
+                        <button id="modeFocus" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-neutral-900">Estudio (25m)</button>
+                        <button id="modeShort" class="px-3 py-1.5 rounded-lg hover:text-neutral-900">Descanso Corto (5m)</button>
+                        <button id="modeLong" class="px-3 py-1.5 rounded-lg hover:text-neutral-900">Descanso Largo (15m)</button>
+                    </div>
+                </div>
+
+                <!-- Acumulado de Tiempo por Asignatura -->
+                <div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm space-y-4">
+                    <h3 class="font-bold text-neutral-900 text-base flex items-center gap-2">
+                        <i class="ph ph-clock-afternoon text-neutral-500"></i> Horas Invertidas por Área
+                    </h3>
+                    <div id="timeBySubjectList" class="space-y-3 divide-y divide-neutral-100 text-xs">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GESTOR DE TAREAS Y ORDEN POR DIFICULTAD -->
+        <section id="tasks" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-neutral-900 flex items-center gap-2">
+                        <i class="ph ph-check-square-offset text-neutral-600"></i> Gestor de Asignaciones y Tareas
+                    </h2>
+                    <p class="text-sm text-neutral-500">Organiza tus pendientes según grado de dificultad creciente o decreciente.</p>
+                </div>
+                <!-- Filtro de Orden -->
+                <div class="flex items-center gap-2">
+                    <label for="sortSelect" class="text-xs font-medium text-neutral-500 whitespace-nowrap">Ordenar por Dificultad:</label>
+                    <select id="sortSelect" class="bg-white border border-neutral-200 text-xs font-medium rounded-xl px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-400">
+                        <option value="none">Sin orden específico</option>
+                        <option value="asc">Creciente (Fácil ➔ Difícil)</option>
+                        <option value="desc">Decreciente (Difícil ➔ Fácil)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Formulario de Nueva Tarea -->
+                <div class="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm space-y-4 h-fit">
+                    <h3 class="font-bold text-neutral-900 text-base">Nueva Asignación</h3>
+                    <form id="taskForm" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-neutral-600 mb-1">Título de la tarea</label>
+                            <input type="text" id="taskTitle" required placeholder="Ej: Resolver guía de Derivadas" class="w-full p-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-neutral-600 mb-1">Materia</label>
+                                <select id="taskSubject" class="w-full p-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400">
+                                    <option value="Matemáticas">Matemáticas</option>
+                                    <option value="Historia">Historia</option>
+                                    <option value="Programación">Programación</option>
+                                    <option value="Literatura">Literatura</option>
+                                    <option value="Ciencias">Ciencias</option>
+                                    <option value="Idiomas">Idiomas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-neutral-600 mb-1">Dificultad (1 a 5)</label>
+                                <select id="taskDifficulty" class="w-full p-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400">
+                                    <option value="1">1 - Muy Fácil</option>
+                                    <option value="2">2 - Fácil</option>
+                                    <option value="3" selected>3 - Intermedio</option>
+                                    <option value="4">4 - Difícil</option>
+                                    <option value="5">5 - Muy Difícil</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-neutral-600 mb-1">Fecha Límite</label>
+                            <input type="date" id="taskDueDate" required class="w-full p-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white font-medium text-xs rounded-xl transition-all shadow-sm">
+                            Guardar Asignación
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Listado de Tareas -->
+                <div class="lg:col-span-2 space-y-3">
+                    <div id="tasksContainer" class="space-y-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER CON RESULTADOS Y MÉTRICAS DE ESTUDIO -->
+    <footer id="stats" class="bg-neutral-900 text-neutral-300 mt-20 border-t border-neutral-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+            
+            <div class="space-y-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-400">Panel de Resultados Percibidos</span>
+                <h3 class="text-2xl font-bold text-white">Desempeño e Impacto por Área de Estudio</h3>
+                <p class="text-sm text-neutral-400 max-w-2xl">
+                    Métricas acumuladas que reflejan el nivel de retención de información, satisfacción percibida y comprensión lograda mediante el asistente.
+                </p>
+            </div>
+
+            <!-- Grid de Métricas -->
+            <div id="footerMetricsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Se poblará dinámicamente con JS -->
+            </div>
+
+            <div class="pt-8 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-white/10 text-white flex items-center justify-center font-bold">A</div>
+                    <span>© 2026 AcademiMind Assistant. Diseñado para la concentración y el alto rendimiento.</span>
+                </div>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-neutral-300 transition-colors">Privacidad</a>
+                    <a href="#" class="hover:text-neutral-300 transition-colors">Términos de Uso</a>
+                    <a href="#" class="hover:text-neutral-300 transition-colors">Soporte Técnico</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Código Lógico JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
